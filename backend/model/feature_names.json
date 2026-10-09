@@ -1,0 +1,20 @@
+[
+  "url_length",
+  "hostname_length",
+  "path_length",
+  "num_dots",
+  "num_hyphens",
+  "num_at",
+  "num_subdomains",
+  "has_ip",
+  "is_https",
+  "num_digits",
+  "num_special_chars",
+  "has_punycode",
+  "entropy",
+  "suspicious_tld",
+  "suspicious_keywords_count",
+  "has_redirect_param",
+  "has_hex_encoding",
+  "path_depth"
+]

@@ -1,0 +1,63 @@
+{
+  "model_name": "CyberSentry Random Forest URL Threat Classifier",
+  "version": "1.2.0",
+  "algorithm": "RandomForestClassifier(n_estimators=100, max_depth=12)",
+  "features": [
+    "url_length",
+    "hostname_length",
+    "path_length",
+    "num_dots",
+    "num_hyphens",
+    "num_at",
+    "num_subdomains",
+    "has_ip",
+    "is_https",
+    "num_digits",
+    "num_special_chars",
+    "has_punycode",
+    "entropy",
+    "suspicious_tld",
+    "suspicious_keywords_count",
+    "has_redirect_param",
+    "has_hex_encoding",
+    "path_depth"
+  ],
+  "metrics": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "confusion_matrix": [
+      [
+        40,
+        0
+      ],
+      [
+        0,
+        30
+      ]
+    ],
+    "test_sample_size": 70,
+    "train_sample_size": 210
+  },
+  "feature_importances": {
+    "is_https": 0.3292,
+    "hostname_length": 0.1715,
+    "suspicious_tld": 0.1651,
+    "num_hyphens": 0.1406,
+    "num_subdomains": 0.0477,
+    "suspicious_keywords_count": 0.0438,
+    "path_depth": 0.0299,
+    "url_length": 0.0181,
+    "has_ip": 0.0115,
+    "has_punycode": 0.01,
+    "path_length": 0.0082,
+    "num_special_chars": 0.0077,
+    "has_redirect_param": 0.005,
+    "num_digits": 0.0041,
+    "num_dots": 0.0038,
+    "entropy": 0.0031,
+    "num_at": 0.0007,
+    "has_hex_encoding": 0.0
+  }
+}
