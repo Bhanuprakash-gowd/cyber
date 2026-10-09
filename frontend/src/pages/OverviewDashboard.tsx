@@ -319,26 +319,30 @@ export const OverviewDashboard: React.FC = () => {
           </div>
 
           <div className="space-y-3">
-            {latestNews.map((article) => (
-              <div
-                key={article.id}
-                className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800/80 hover:border-cyan-500/30 transition-all"
-              >
-                <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1">
-                  <span className="text-cyan-400 font-medium">{article.source_name}</span>
-                  <span className="font-mono text-[10px]">{new Date(article.published_at).toLocaleDateString()}</span>
+            {latestNews.length === 0 ? (
+              <p className="text-xs text-slate-500 py-6 text-center">Threat intelligence wire synchronizing...</p>
+            ) : (
+              latestNews.map((article) => (
+                <div
+                  key={article.id}
+                  className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800/80 hover:border-cyan-500/30 transition-all"
+                >
+                  <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1">
+                    <span className="text-cyan-400 font-medium">{article.source_name}</span>
+                    <span className="font-mono text-[10px]">{new Date(article.published_at).toLocaleDateString()}</span>
+                  </div>
+                  <h4 className="text-xs font-semibold text-white line-clamp-1 hover:text-cyan-300">
+                    <a href={article.source_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
+                      <span>{article.title}</span>
+                      <ExternalLink className="w-3 h-3 text-slate-500" />
+                    </a>
+                  </h4>
+                  <p className="text-[11px] text-slate-400 mt-1 line-clamp-2">
+                    {article.summary}
+                  </p>
                 </div>
-                <h4 className="text-xs font-semibold text-white line-clamp-1 hover:text-cyan-300">
-                  <a href={article.source_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
-                    <span>{article.title}</span>
-                    <ExternalLink className="w-3 h-3 text-slate-500" />
-                  </a>
-                </h4>
-                <p className="text-[11px] text-slate-400 mt-1 line-clamp-2">
-                  {article.summary}
-                </p>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>
@@ -360,7 +364,10 @@ export const OverviewDashboard: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {recentReports.map((rep) => (
+          {recentReports.length === 0 ? (
+            <p className="text-xs text-slate-500 py-6 text-center col-span-full">No community scam reports submitted yet.</p>
+          ) : (
+            recentReports.map((rep) => (
             <div
               key={rep.id}
               className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800/90 flex flex-col justify-between"
@@ -383,7 +390,7 @@ export const OverviewDashboard: React.FC = () => {
                 </div>
               )}
             </div>
-          ))}
+          )))}
         </div>
       </div>
     </div>

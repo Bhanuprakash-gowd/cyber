@@ -20,10 +20,10 @@ logger = logging.getLogger("CyberSentryAPI")
 
 app = Flask(__name__)
 
-# Configure CORS with credentials support
+# Configure CORS with wildcard origins for public API access
 CORS(app, resources={
     r"/api/*": {
-        "origins": [Config.FRONTEND_ORIGIN, "http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000"],
+        "origins": "*",
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization", "X-Admin-Secret"]
     }
