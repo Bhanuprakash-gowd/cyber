@@ -5,7 +5,8 @@ import json
 import logging
 from urllib.parse import urlparse
 import joblib
-import pandas as pd
+import warnings
+import numpy as np
 from config import Config
 
 logger = logging.getLogger(__name__)
@@ -161,8 +162,10 @@ class MLThreatService:
         ml_prob = 0.0
         if self.model is not None:
             try:
-                feature_row = pd.DataFrame([features])[self.feature_names]
-                probs = self.model.predict_proba(feature_row)[0]
+                feature_row = np.array([[features[name] for name in self.feature_names]])
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    probs = self.model.predict_proba(feature_row)[0]
                 ml_prob = float(probs[1]) # probability of phishing
                 model_used = True
             except Exception as e:
