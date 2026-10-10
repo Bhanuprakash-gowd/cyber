@@ -321,6 +321,16 @@ class MLThreatService:
             # Domain is syntactically valid and has no critical threats,
             # but is NOT on verified authoritative brand registries.
             risk_level = "unverified"
+            # ZERO-TRUST DEFENSE: Absence of blacklist hits does NOT mean safe!
+            # An attacker could own this newly registered or untrusted domain.
+            # Enforce a baseline uncertainty risk floor (35.0) and inject explicit Zero-Trust indicator.
+            risk_score = round(max(35.0, risk_score), 1)
+            indicators.append({
+                "type": "Unverified Domain / Zero-Trust Caution",
+                "severity": "Medium",
+                "evidence": f"Domain '{registered_domain}' lacks verified enterprise provenance or established reputation history. Attackers frequently register fresh, clean-looking domains to bypass legacy blacklists and distribute targeted phishing or malware.",
+                "weight": 25
+            })
 
         # 9. Tailored Actionable Recommendations
         if risk_level == "high":
@@ -354,10 +364,10 @@ class MLThreatService:
             ]
         else: # unverified
             recommended_actions = [
-                "Domain displays standard syntax but does NOT appear on verified official brand registries.",
-                "Exercise caution: A lack of explicit threat reports does not guarantee total safety.",
-                "Confirm domain provenance independently prior to entering logins, payment details, or personal data.",
-                "Never rely exclusively on an HTTPS padlock as proof of business legitimacy."
+                "ZERO-TRUST CAUTION: Domain lacks verified organizational credentials. If an unknown person sent you this link, do NOT trust it.",
+                "Zero known blacklist reports does NOT equal safety. Fresh attacker domains often evade blocklists for the first 24-48 hours.",
+                "Never enter passwords, two-factor OTPs, or financial information on an unverified destination.",
+                "If this is an unexpected email or SMS claiming to be an urgent invoice or login, verify through a trusted secondary channel."
             ]
 
         # 10. Summary Text
@@ -374,7 +384,7 @@ class MLThreatService:
         elif risk_level == "low":
             summary = "Verified authentic domain matching official organization records with clean threat telemetry."
         else: # unverified
-            summary = f"Unverified destination. Domain '{registered_domain}' lacks confirmed authoritative brand provenance."
+            summary = f"Unverified destination ({registered_domain}). Zero known blacklist hits does NOT mean safe—adversaries often use newly registered or untrusted domains to conduct targeted attacks."
 
         feature_breakdown = {
             "entropy": features["entropy"],

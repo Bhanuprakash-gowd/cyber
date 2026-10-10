@@ -18,7 +18,8 @@ import {
   Copy,
   ExternalLink,
   Cpu,
-  Fingerprint
+  Fingerprint,
+  HelpCircle
 } from 'lucide-react';
 
 export const ResultsPage: React.FC = () => {
@@ -179,6 +180,21 @@ export const ResultsPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Zero-Trust Security Advisory for Unverified Links */}
+      {isUnverified && (
+        <div className="rounded-2xl border border-sky-500/40 bg-sky-950/30 backdrop-blur-xl p-5 shadow-xl flex items-start gap-4">
+          <AlertTriangle className="w-6 h-6 text-sky-400 flex-shrink-0 mt-0.5" />
+          <div className="space-y-1.5">
+            <h4 className="text-xs font-bold text-sky-300 uppercase tracking-wider font-mono flex items-center gap-2">
+              <span>Zero-Trust Security Advisory: Unverified Destination</span>
+            </h4>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              <strong>Why isn't this marked safe?</strong> An attacker can easily register a fresh, arbitrary domain, configure free HTTPS, and send it directly to you. Because the domain is newly created or lacks authoritative institutional history, global blocklists have zero prior incident reports on it. <strong>Absence of threat reports does NOT mean the link is safe.</strong> Do NOT enter credentials, OTPs, or payment details.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Domain Architecture & Public Suffix (eTLD+1) Card */}
       {scan.domain_details && (
         <div className="rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur-xl p-5 shadow-xl space-y-3">
@@ -217,13 +233,23 @@ export const ResultsPage: React.FC = () => {
           </h3>
 
           {scan.indicators.length === 0 ? (
-            <div className="p-6 rounded-xl bg-slate-950/60 border border-slate-800/60 text-center space-y-2">
-              <ShieldCheck className="w-8 h-8 text-emerald-400 mx-auto" />
-              <p className="text-xs text-slate-300 font-medium">Clean Signature Profile</p>
-              <p className="text-[11px] text-slate-500">
-                No unauthorized brand squatting, homoglyphs, high-risk TLDs, IP hosts, or sensitive keyword traps detected.
-              </p>
-            </div>
+            isUnverified ? (
+              <div className="p-6 rounded-xl bg-sky-950/30 border border-sky-800/40 text-center space-y-2">
+                <HelpCircle className="w-8 h-8 text-sky-400 mx-auto" />
+                <p className="text-xs text-sky-200 font-medium">Unverified Domain Signature</p>
+                <p className="text-[11px] text-slate-400">
+                  No public blacklist records exist yet, but the domain lacks verified organizational provenance. Zero threat reports does NOT equal safe.
+                </p>
+              </div>
+            ) : (
+              <div className="p-6 rounded-xl bg-slate-950/60 border border-slate-800/60 text-center space-y-2">
+                <ShieldCheck className="w-8 h-8 text-emerald-400 mx-auto" />
+                <p className="text-xs text-slate-300 font-medium">Clean Signature Profile</p>
+                <p className="text-[11px] text-slate-500">
+                  No unauthorized brand squatting, homoglyphs, high-risk TLDs, IP hosts, or sensitive keyword traps detected.
+                </p>
+              </div>
+            )
           ) : (
             <div className="space-y-3">
               {scan.indicators.map((ind, i) => (

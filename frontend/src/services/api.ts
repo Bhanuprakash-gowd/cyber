@@ -154,6 +154,12 @@ class ApiService {
         riskLevel = 'low';
       } else {
         riskLevel = 'unverified';
+        score = Math.max(score, 35);
+        flags.push({
+          type: 'Unverified Domain / Zero-Trust Caution',
+          severity: 'Medium',
+          evidence: 'Domain lacks verified enterprise provenance. Adversaries frequently register fresh, clean-looking domains that have 0 blacklist hits for the first 24-48 hours.'
+        });
       }
 
       const scanResult: ScanResult = {
@@ -166,7 +172,7 @@ class ApiService {
         confidence: score / 100,
         model_version: '1.2.0',
         model_used: true,
-        summary: riskLevel === 'high' ? 'Malicious Phishing Vector' : riskLevel === 'suspicious' ? 'Suspicious Characteristics Detected' : riskLevel === 'unverified' ? 'Unverified Destination - Provenance Not Confirmed' : 'Verified Authentic Resource',
+        summary: riskLevel === 'high' ? 'Malicious Phishing Vector' : riskLevel === 'suspicious' ? 'Suspicious Characteristics Detected' : riskLevel === 'unverified' ? 'Unverified Destination - Zero blacklist reports does NOT equal safe. Provenance unconfirmed.' : 'Verified Authentic Resource',
         indicators: flags,
         feature_breakdown: {
           url_length: cleanUrl.length,
@@ -174,7 +180,7 @@ class ApiService {
           suspicious_tld: hasBadTld ? 1 : 0
         },
         recommended_actions: [
-          riskLevel === 'high' ? 'Do NOT enter credentials or download files from this link.' : riskLevel === 'unverified' ? 'Confirm domain provenance independently before submitting credentials.' : 'Verify official brand channels through known bookmarks.',
+          riskLevel === 'high' ? 'Do NOT enter credentials or download files from this link.' : riskLevel === 'unverified' ? 'ZERO-TRUST: Confirm domain provenance independently before submitting credentials or OTPs.' : 'Verify official brand channels through known bookmarks.',
           'Always verify official root domains.'
         ],
         created_at: new Date().toISOString()
