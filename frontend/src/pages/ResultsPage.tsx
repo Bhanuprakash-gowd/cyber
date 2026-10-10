@@ -72,6 +72,7 @@ export const ResultsPage: React.FC = () => {
 
   const isHighRisk = scan.risk_level === 'high';
   const isSuspicious = scan.risk_level === 'suspicious';
+  const isUnverified = scan.risk_level === 'unverified';
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-300">
@@ -113,6 +114,8 @@ export const ResultsPage: React.FC = () => {
           ? 'bg-rose-950/20 border-rose-500/30'
           : isSuspicious
           ? 'bg-amber-950/20 border-amber-500/30'
+          : isUnverified
+          ? 'bg-sky-950/20 border-sky-500/30'
           : 'bg-emerald-950/20 border-emerald-500/30'
       }`}>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -152,7 +155,7 @@ export const ResultsPage: React.FC = () => {
             <div className="w-24 bg-slate-800 h-2 rounded-full overflow-hidden mt-2.5">
               <div
                 className={`h-full rounded-full transition-all duration-500 ${
-                  isHighRisk ? 'bg-rose-500 shadow-[0_0_8px_#f87171]' : isSuspicious ? 'bg-amber-500' : 'bg-emerald-500'
+                  isHighRisk ? 'bg-rose-500 shadow-[0_0_8px_#f87171]' : isSuspicious ? 'bg-amber-500' : isUnverified ? 'bg-sky-500 shadow-[0_0_8px_#38bdf8]' : 'bg-emerald-500'
                 }`}
                 style={{ width: `${Math.max(5, scan.risk_score)}%` }}
               />

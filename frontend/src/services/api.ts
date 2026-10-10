@@ -1,7 +1,8 @@
-import { ScanResult, ThreatArticle, CommunityReport, SystemStats, AppNotification } from '../types';
+import { ScanResult, ThreatArticle, CommunityReport, SystemStats, AppNotification, RiskLevel } from '../types';
 import { MOCK_STATS, MOCK_SCANS, MOCK_ARTICLES, MOCK_COMMUNITY_REPORTS } from './mockData';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const rawBase = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000') as string;
+const API_BASE = rawBase.trim().replace(/\/+$/, '');
 
 const LOCAL_STORAGE_SCANS_KEY = 'cybersentry_cached_scans';
 
@@ -124,6 +125,16 @@ class ApiService {
         score += matchedKw.length * 15;
       }
 
+      // Check for unauthorized brand squatting in client fallback
+      if (lower.includes('paypal') && !lower.includes('paypal.com') && !lower.includes('paypal.me') && !lower.includes('paypal.co.uk')) {
+        flags.push({
+          type: 'Brand Impersonation / Unauthorized Domain Squatting',
+          severity: 'Critical',
+          evidence: "Domain uses 'paypal' outside of official verified PayPal apex domains."
+        });
+        score = Math.max(score, 85);
+      }
+
       if (cleanUrl.length > 70) {
         flags.push({
           type: 'Abnormally Long URL Structure',
@@ -134,7 +145,16 @@ class ApiService {
       }
 
       score = Math.min(score, 98);
-      const riskLevel: 'high' | 'suspicious' | 'low' = score >= 70 ? 'high' : score >= 35 ? 'suspicious' : 'low';
+      let riskLevel: RiskLevel = 'unverified';
+      if (score >= 70 || flags.some((f) => f.severity === 'Critical')) {
+        riskLevel = 'high';
+      } else if (score >= 35) {
+        riskLevel = 'suspicious';
+      } else if (lower.includes('google.com') || lower.includes('paypal.com') || lower.includes('microsoft.com') || lower.includes('github.com')) {
+        riskLevel = 'low';
+      } else {
+        riskLevel = 'unverified';
+      }
 
       const scanResult: ScanResult = {
         id: `scan-${Date.now()}`,
@@ -146,7 +166,7 @@ class ApiService {
         confidence: score / 100,
         model_version: '1.2.0',
         model_used: true,
-        summary: riskLevel === 'high' ? 'Malicious Phishing Vector' : riskLevel === 'suspicious' ? 'Suspicious Unverified Destination' : 'Safe Legitimate Resource',
+        summary: riskLevel === 'high' ? 'Malicious Phishing Vector' : riskLevel === 'suspicious' ? 'Suspicious Characteristics Detected' : riskLevel === 'unverified' ? 'Unverified Destination - Provenance Not Confirmed' : 'Verified Authentic Resource',
         indicators: flags,
         feature_breakdown: {
           url_length: cleanUrl.length,
@@ -154,8 +174,8 @@ class ApiService {
           suspicious_tld: hasBadTld ? 1 : 0
         },
         recommended_actions: [
-          riskLevel === 'high' ? 'Do NOT enter credentials or download files from this link.' : 'Inspect domain authenticity prior to authorizing payments.',
-          'Verify official brand channels through known bookmarks.'
+          riskLevel === 'high' ? 'Do NOT enter credentials or download files from this link.' : riskLevel === 'unverified' ? 'Confirm domain provenance independently before submitting credentials.' : 'Verify official brand channels through known bookmarks.',
+          'Always verify official root domains.'
         ],
         created_at: new Date().toISOString()
       };

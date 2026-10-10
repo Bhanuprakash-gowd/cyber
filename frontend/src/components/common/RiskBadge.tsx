@@ -1,6 +1,6 @@
 import React from 'react';
 import { RiskLevel } from '../../types';
-import { ShieldCheck, AlertTriangle, ShieldAlert } from 'lucide-react';
+import { ShieldCheck, AlertTriangle, ShieldAlert, HelpCircle } from 'lucide-react';
 
 interface RiskBadgeProps {
   level: RiskLevel;
@@ -9,7 +9,7 @@ interface RiskBadgeProps {
 }
 
 export const RiskBadge: React.FC<RiskBadgeProps> = ({ level, size = 'md', showIcon = true }) => {
-  const normalized = (level || 'low').toLowerCase() as RiskLevel;
+  const normalized = (level || 'unverified').toLowerCase() as RiskLevel;
 
   const config = {
     low: {
@@ -17,6 +17,12 @@ export const RiskBadge: React.FC<RiskBadgeProps> = ({ level, size = 'md', showIc
       icon: ShieldCheck,
       label: 'Low Risk',
       dot: 'bg-emerald-400 shadow-[0_0_8px_#34d399]'
+    },
+    unverified: {
+      bg: 'bg-sky-500/10 text-sky-400 border-sky-500/30',
+      icon: HelpCircle,
+      label: 'Unverified',
+      dot: 'bg-sky-400 shadow-[0_0_8px_#38bdf8]'
     },
     suspicious: {
       bg: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
@@ -32,8 +38,8 @@ export const RiskBadge: React.FC<RiskBadgeProps> = ({ level, size = 'md', showIc
     }
   }[normalized] || {
     bg: 'bg-slate-500/10 text-slate-400 border-slate-500/30',
-    icon: ShieldCheck,
-    label: 'Unknown',
+    icon: HelpCircle,
+    label: 'Unverified',
     dot: 'bg-slate-400'
   };
 

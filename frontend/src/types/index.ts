@@ -1,4 +1,4 @@
-export type RiskLevel = 'low' | 'suspicious' | 'high';
+export type RiskLevel = 'low' | 'suspicious' | 'high' | 'unverified';
 
 export interface ThreatIndicator {
   type: string;
