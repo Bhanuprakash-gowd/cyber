@@ -10,6 +10,7 @@ import numpy as np
 from config import Config
 from services.domain_analyzer import DomainAnalyzer
 from services.reputation_service import reputation_service
+from services.evidence_service import evidence_service
 
 logger = logging.getLogger(__name__)
 
@@ -390,6 +391,14 @@ class MLThreatService:
             "is_authorized_brand": is_authorized_brand
         }
 
+        evidence_audit = evidence_service.audit_checks(
+            url=normalized,
+            components=components,
+            indicators=indicators,
+            model_used=model_used,
+            is_authorized_brand=is_authorized_brand
+        )
+
         return {
             "target": raw_url,
             "normalized_url": normalized,
@@ -404,7 +413,8 @@ class MLThreatService:
             "summary": summary,
             "recommended_actions": recommended_actions,
             "extracted_features": features,
-            "domain_details": components
+            "domain_details": components,
+            "evidence_audit": evidence_audit
         }
 
 ml_service = MLThreatService()

@@ -179,6 +179,34 @@ export const ResultsPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Domain Architecture & Public Suffix (eTLD+1) Card */}
+      {scan.domain_details && (
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur-xl p-5 shadow-xl space-y-3">
+          <h3 className="text-sm font-bold text-white flex items-center gap-2">
+            <Fingerprint className="w-4 h-4 text-cyan-400" />
+            <span>Domain Architecture & Public Suffix (eTLD+1) Breakdown</span>
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800/80">
+              <span className="text-[10px] uppercase font-mono text-slate-500 block">Registered Apex Domain</span>
+              <span className="font-mono font-bold text-cyan-300 break-all">{scan.domain_details.registered_domain || 'N/A'}</span>
+            </div>
+            <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800/80">
+              <span className="text-[10px] uppercase font-mono text-slate-500 block">SLD Label</span>
+              <span className="font-mono text-white">{scan.domain_details.sld || 'N/A'}</span>
+            </div>
+            <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800/80">
+              <span className="text-[10px] uppercase font-mono text-slate-500 block">Public Suffix / TLD</span>
+              <span className="font-mono text-white">.{scan.domain_details.tld || 'N/A'}</span>
+            </div>
+            <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800/80">
+              <span className="text-[10px] uppercase font-mono text-slate-500 block">Subdomains</span>
+              <span className="font-mono text-slate-300 break-all">{scan.domain_details.subdomains || '(none / apex)'}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Grid: Risk Indicators Evidence & Feature Vector Radar */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Identified Indicators (2 cols) */}
@@ -193,7 +221,7 @@ export const ResultsPage: React.FC = () => {
               <ShieldCheck className="w-8 h-8 text-emerald-400 mx-auto" />
               <p className="text-xs text-slate-300 font-medium">Clean Signature Profile</p>
               <p className="text-[11px] text-slate-500">
-                No known homoglyphs, high-risk TLDs, IP hosts, or sensitive keyword traps detected.
+                No unauthorized brand squatting, homoglyphs, high-risk TLDs, IP hosts, or sensitive keyword traps detected.
               </p>
             </div>
           ) : (
@@ -232,6 +260,81 @@ export const ResultsPage: React.FC = () => {
           <FeatureRadar features={scan.feature_breakdown} />
         </div>
       </div>
+
+      {/* Multi-Layer Security Checks Audit & Transparency Card */}
+      {scan.evidence_audit && (
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur-xl p-6 shadow-xl space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-cyan-400" />
+              <span>Multi-Layer Security Checks Audit Trail</span>
+            </h3>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+              Evidence-Based Verification
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Completed Checks */}
+            <div className="space-y-2">
+              <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider font-mono">
+                Completed Detection Layers
+              </h4>
+              <div className="space-y-2">
+                {scan.evidence_audit.completed_checks?.map((chk, i) => (
+                  <div key={i} className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800/80 text-xs flex flex-col gap-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-slate-200">{chk.name}</span>
+                      <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded font-semibold ${
+                        chk.status === 'flagged' ? 'bg-rose-500/20 text-rose-400' :
+                        chk.status === 'completed' ? 'bg-cyan-500/20 text-cyan-300' :
+                        'bg-emerald-500/20 text-emerald-400'
+                      }`}>
+                        {chk.status.toUpperCase()}
+                      </span>
+                    </div>
+                    {chk.details && <p className="text-[11px] text-slate-400">{chk.details}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Unavailable / Safety-Disabled Checks */}
+            <div className="space-y-2">
+              <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider font-mono">
+                Unavailable / Disabled Checks (Safe Mode)
+              </h4>
+              <div className="space-y-2">
+                {scan.evidence_audit.unavailable_checks?.map((chk, i) => (
+                  <div key={i} className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800/80 text-xs flex flex-col gap-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-slate-400">{chk.name}</span>
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">
+                        {chk.status === 'disabled_for_safety' ? 'DISABLED (SAFETY)' : 'UNAVAILABLE'}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500">{chk.reason}</p>
+                  </div>
+                ))}
+
+                {/* Machine Learning Model Limitations Banner */}
+                {scan.evidence_audit.ml_limitations && (
+                  <div className="p-3 rounded-xl bg-slate-950/90 border border-slate-800/90 text-xs space-y-1.5 mt-2">
+                    <span className="text-[10px] uppercase font-mono text-cyan-400 font-bold block">
+                      Machine Learning Safety & Known Limitations
+                    </span>
+                    <ul className="text-[11px] text-slate-400 space-y-1 list-disc list-inside">
+                      {scan.evidence_audit.ml_limitations.known_limitations?.map((lim, idx) => (
+                        <li key={idx} className="leading-relaxed">{lim}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Recommended Safe Actions */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur-xl p-6 shadow-xl space-y-3">

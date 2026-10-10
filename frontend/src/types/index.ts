@@ -7,6 +7,30 @@ export interface ThreatIndicator {
   weight?: number;
 }
 
+export interface CheckAuditItem {
+  name: string;
+  status: 'passed' | 'flagged' | 'completed' | 'unavailable' | 'disabled_for_safety';
+  details?: string;
+  reason?: string;
+}
+
+export interface EvidenceAudit {
+  completed_checks?: CheckAuditItem[];
+  unavailable_checks?: CheckAuditItem[];
+  dns_evidence?: {
+    evaluation_mode?: string;
+    hostname?: string;
+    registered_domain?: string;
+    ip_classification?: string;
+    safety_guarantee?: string;
+  };
+  ml_limitations?: {
+    model_version?: string;
+    features_evaluated?: number;
+    known_limitations?: string[];
+  };
+}
+
 export interface ScanResult {
   id: string;
   user_id?: string | null;
@@ -27,6 +51,14 @@ export interface ScanResult {
   extracted_features?: Record<string, any>;
   is_guest?: boolean;
   created_at: string;
+  domain_details?: {
+    hostname?: string;
+    registered_domain?: string;
+    sld?: string;
+    tld?: string;
+    subdomains?: string;
+  };
+  evidence_audit?: EvidenceAudit;
 }
 
 export interface ThreatArticle {
